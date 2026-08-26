@@ -18,7 +18,7 @@ app = FastAPI(
 )
 
 # Load model data
-model_path = r"e:\Liver Disease Prediction System\model.joblib"
+model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.joblib")
 if not os.path.exists(model_path):
     raise RuntimeError(f"Trained model not found at {model_path}. Please run train_model.py first.")
 
