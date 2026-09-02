@@ -254,16 +254,17 @@ def explain_risk(data: PatientData):
     }
 
 
-# Mount static files directory
-# Note: In production we ensure the static directory exists before mounting
-os.makedirs("static", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Mount static files directory with absolute path
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+os.makedirs(STATIC_DIR, exist_ok=True)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.get("/")
 def read_index():
     """Serves the main frontend dashboard."""
-    index_path = "static/index.html"
+    index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     else:
-        return {"message": "Welcome to Liver Disease Prediction System API. Please create index.html in the static folder."}
+        return {"message": "Welcome to Liver Disease Prediction System API. static/index.html not found."}
+

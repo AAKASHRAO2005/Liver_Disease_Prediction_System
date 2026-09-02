@@ -1,4 +1,7 @@
-/* Base Reset and Global Styling */
+/* ==========================================================================
+   HepaticShield - Modern Clinical Intelligence Dashboard
+   ========================================================================== */
+
 :root {
     --bg-gradient-start: #0a0d1a;
     --bg-gradient-end: #12162e;
@@ -23,8 +26,8 @@
     --danger-glow: rgba(239, 68, 68, 0.2);
     
     --sidebar-width: 280px;
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -33,7 +36,11 @@
     padding: 0;
 }
 
-body {
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     background: radial-gradient(circle at top left, var(--bg-gradient-start), var(--bg-gradient-end));
     background-attachment: fixed;
     color: var(--text-primary);
@@ -41,10 +48,168 @@ body {
     font-size: 14px;
     line-height: 1.6;
     overflow-x: hidden;
-    height: 100vh;
 }
 
-/* App Container Layout */
+/* ==========================================================================
+   Doctor Login Screen Overlay (Fixed Fullscreen Modal)
+   ========================================================================== */
+.login-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, rgba(19, 27, 56, 0.97) 0%, rgba(8, 10, 20, 0.99) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(18, 24, 44, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(99, 102, 241, 0.18);
+    border-radius: 20px;
+    padding: 36px 32px;
+    backdrop-filter: blur(16px);
+    animation: modalSlide 0.3s ease-out;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-badge-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, var(--primary), #a855f7);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #ffffff;
+    box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.login-header h2 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.auth-security-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--success);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.login-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.login-error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+.demo-login-box {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+}
+
+.demo-login-box span {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.demo-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(99, 102, 241, 0.4);
+    color: var(--primary-light);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.demo-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--primary);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   Main Application Layout
+   ========================================================================== */
 .app-container {
     display: flex;
     width: 100vw;
@@ -52,7 +217,7 @@ body {
     overflow: hidden;
 }
 
-/* Sidebar Styling */
+/* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
     background: rgba(10, 13, 26, 0.85);
@@ -69,7 +234,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .brand-icon {
@@ -98,7 +263,7 @@ body {
     margin-top: -2px;
 }
 
-/* Doctor Profile Card in Sidebar */
+/* Doctor Profile Widget in Sidebar */
 .doctor-profile-card {
     display: flex;
     align-items: center;
@@ -107,7 +272,7 @@ body {
     border: 1px solid rgba(99, 102, 241, 0.2);
     border-radius: 12px;
     padding: 12px 14px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .doctor-avatar {
@@ -171,7 +336,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     font-size: 12px;
 }
 
@@ -201,11 +366,11 @@ body {
     font-weight: 500;
 }
 
-/* Sidebar Menu */
+/* Navigation Menu */
 .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     flex-grow: 1;
 }
 
@@ -215,21 +380,21 @@ body {
     gap: 12px;
     color: var(--text-secondary);
     text-decoration: none;
-    padding: 12px 16px;
+    padding: 11px 14px;
     border-radius: 10px;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid transparent;
 }
 
 .nav-item i {
     font-size: 16px;
-    transition: transform 0.3s ease;
+    transition: transform 0.25s ease;
 }
 
 .nav-item:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .nav-item:hover i {
@@ -239,8 +404,8 @@ body {
 .nav-item.active {
     color: var(--text-primary);
     background: var(--primary-glow);
-    border-color: rgba(99, 102, 241, 0.25);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12);
 }
 
 .logout-nav-item {
@@ -254,7 +419,7 @@ body {
 }
 
 .sidebar-footer {
-    padding-top: 16px;
+    padding-top: 14px;
     border-top: 1px solid var(--border-color);
     font-size: 11px;
     color: var(--text-muted);
@@ -264,7 +429,9 @@ body {
     gap: 4px;
 }
 
-/* Main Workspace */
+/* ==========================================================================
+   Workspace View & Dashboard Sections
+   ========================================================================== */
 .workspace {
     flex-grow: 1;
     height: 100vh;
@@ -277,15 +444,15 @@ body {
 .dashboard-section {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    animation: fadeIn 0.4s ease-out;
+    gap: 20px;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .section-header h2 {
     font-family: var(--font-heading);
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     letter-spacing: -0.5px;
     background: linear-gradient(to right, #ffffff, var(--text-secondary));
     -webkit-background-clip: text;
@@ -295,13 +462,13 @@ body {
 .section-header p {
     color: var(--text-secondary);
     max-width: 800px;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-/* Grid Layouts */
+/* Grids */
 .grid-layout {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: 1.15fr 0.85fr;
     gap: 24px;
     align-items: start;
 }
@@ -319,7 +486,7 @@ body {
     gap: 24px;
 }
 
-/* Cards & Glassmorphism */
+/* Cards */
 .card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -340,9 +507,9 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 14px;
+    padding-bottom: 12px;
 }
 
 .card-header i {
@@ -424,7 +591,9 @@ body {
     border-color: var(--primary);
 }
 
-/* Form Styles */
+/* ==========================================================================
+   Form Fields & Manual Numeric Inputs
+   ========================================================================== */
 #screening-form, #patient-registration-form {
     display: flex;
     flex-direction: column;
@@ -486,7 +655,7 @@ select option {
     color: #ffffff;
 }
 
-/* Custom Sliders & Manual Numeric Inputs */
+/* Custom Sliders & Manual Number Inputs */
 .slider-header {
     display: flex;
     justify-content: space-between;
@@ -556,7 +725,6 @@ input[type="range"] {
     margin: 8px 0;
 }
 
-/* Custom Range Thumbs */
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
@@ -605,11 +773,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     background: linear-gradient(135deg, var(--primary-hover), #3c35b8);
 }
 
-.submit-btn:active {
-    transform: translateY(0);
-}
-
-/* Patient Registration & Directory UI */
+/* ==========================================================================
+   Patient Registration & Directory UI
+   ========================================================================== */
 .input-with-action {
     display: flex;
     gap: 6px;
@@ -812,7 +978,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     color: #ffffff;
 }
 
-/* Result Gauge Styles */
+/* ==========================================================================
+   Results & Risk Gauge
+   ========================================================================== */
 .result-card .result-body {
     display: flex;
     flex-direction: column;
@@ -917,13 +1085,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
     background: var(--danger-glow);
     color: var(--danger);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    animation: pulseDanger 2s infinite ease-in-out;
-}
-
-@keyframes pulseDanger {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .assessment-description {
@@ -933,7 +1094,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     max-width: 90%;
 }
 
-/* Explainable AI (SHAP Bars) */
+/* ==========================================================================
+   Explainable AI (SHAP Bars)
+   ========================================================================== */
 .explain-body {
     display: flex;
     flex-direction: column;
@@ -1022,7 +1185,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 8px var(--success-glow);
 }
 
-/* History Table Styles */
+/* ==========================================================================
+   History Table & Badges
+   ========================================================================== */
 .table-card {
     padding: 0;
     overflow: hidden;
@@ -1055,10 +1220,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
     padding: 14px 18px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-secondary);
-}
-
-#history-table tbody tr {
-    transition: background 0.2s ease;
 }
 
 #history-table tbody tr:hover {
@@ -1115,7 +1276,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 2px 8px var(--primary-glow);
 }
 
-/* Clinical Guide Styles */
+/* ==========================================================================
+   Clinical Guide
+   ========================================================================== */
 .guide-card h3 {
     font-family: var(--font-heading);
     font-size: 16px;
@@ -1186,16 +1349,18 @@ input[type="range"]::-webkit-slider-thumb:hover {
     line-height: 1.5;
 }
 
-/* Modal View */
+/* ==========================================================================
+   Modal Dialog
+   ========================================================================== */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
-    z-index: 100;
+    z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1273,176 +1438,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
     font-weight: 600;
 }
 
-/* Doctor Login Screen Overlay */
-.login-screen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle at center, #131b38 0%, #080a14 100%);
-    backdrop-filter: blur(20px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    animation: fadeIn 0.3s ease-out;
+/* ==========================================================================
+   Utilities & Animations
+   ========================================================================== */
+.hidden {
+    display: none !important;
 }
 
-.login-card {
-    width: 100%;
-    max-width: 440px;
-    background: rgba(18, 24, 44, 0.95);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.15);
-    border-radius: 20px;
-    padding: 36px 32px;
-    backdrop-filter: blur(16px);
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.login-badge-icon {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 16px;
-    background: linear-gradient(135deg, var(--primary), #a855f7);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    color: #ffffff;
-    box-shadow: 0 8px 24px var(--primary-glow);
-}
-
-.login-header h2 {
-    font-family: var(--font-heading);
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: #ffffff;
-    margin-bottom: 4px;
-}
-
-.login-header p {
-    color: var(--text-secondary);
-    font-size: 13px;
-    margin-bottom: 12px;
-}
-
-.auth-security-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: var(--success);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-}
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.login-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.login-form-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.login-error {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 14px;
-    font-size: 15px;
-    margin-top: 4px;
-}
-
-.demo-login-box {
-    margin-top: 8px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-}
-
-.demo-login-box span {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
-.demo-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed rgba(99, 102, 241, 0.4);
-    color: var(--primary-light);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.demo-btn:hover {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: var(--primary);
-    color: #ffffff;
-}
-
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes modalSlide {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Utilities */
-.hidden {
-    display: none !important;
-}
-
-/* Responsive Scaling */
+/* Responsive */
 @media (max-width: 1024px) {
     .grid-layout {
         grid-template-columns: 1fr;
