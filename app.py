@@ -115,11 +115,17 @@ def preprocess_patient(data: PatientData):
 @app.post("/api/login")
 def login(data: LoginData):
     """Clinical authentication endpoint for doctors."""
-    username = data.username.strip()
-    pwd = data.password.strip()
+    username = (data.username or "").strip()
+    pwd = (data.password or "").strip()
     
-    # Validate credentials (supports demo account or any doctor login)
-    if username.lower() == "doctor@clinical.org" and pwd == "admin":
+    # If empty, raise 401
+    if not username:
+        raise HTTPException(status_code=401, detail="Clinician ID / Email is required")
+        
+    u_lower = username.lower()
+    
+    # Demo doctor account or default
+    if u_lower in ["doctor@clinical.org", "doctor", "dr. smith", "dr. sarah mitchell", "admin"]:
         return {
             "success": True,
             "token": "mock-clinical-token-12345",
@@ -128,20 +134,20 @@ def login(data: LoginData):
             "hospital": "Apex Memorial Clinical Center",
             "license_id": "MED-99482-CL"
         }
-    elif len(username) >= 3 and len(pwd) >= 3:
-        doc_name = username.split('@')[0].capitalize()
-        if not doc_name.startswith("Dr."):
-            doc_name = f"Dr. {doc_name}"
-        return {
-            "success": True,
-            "token": f"clinical-token-{abs(hash(username))}",
-            "username": doc_name,
-            "department": "Internal Medicine / Hepatology",
-            "hospital": "Clinical Health Center",
-            "license_id": f"MED-{abs(hash(username)) % 90000 + 10000}"
-        }
-    else:
-        raise HTTPException(status_code=401, detail="Invalid clinical credentials. Please provide valid Doctor credentials.")
+    
+    # Any custom clinician username
+    doc_name = username.split('@')[0].capitalize()
+    if not doc_name.startswith("Dr."):
+        doc_name = f"Dr. {doc_name}"
+        
+    return {
+        "success": True,
+        "token": f"clinical-token-{abs(hash(username))}",
+        "username": doc_name,
+        "department": "Internal Medicine / Hepatology",
+        "hospital": "Apex Memorial Clinical Center",
+        "license_id": f"MED-{abs(hash(username)) % 90000 + 10000}"
+    }
 
 @app.get("/api/info")
 def get_model_info():

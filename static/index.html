@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HepaticShield - Liver Disease Prediction & Analytics Dashboard</title>
+    <title>HepaticShield - Clinical Liver Analytics & Patient Decision Support</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome for clinical icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style Sheet -->
@@ -16,25 +16,25 @@
 <body>
     <!-- Doctor Login Screen Overlay -->
     <div id="doctor-login-screen" class="login-screen-overlay">
-        <div class="login-card card">
+        <div class="login-card">
             <div class="login-header">
                 <div class="login-badge-icon">
                     <i class="fa-solid fa-user-doctor"></i>
                 </div>
                 <h2>HepaticShield Portal</h2>
                 <p>Clinical Decision Support & Liver Analytics System</p>
-                <span class="auth-security-tag"><i class="fa-solid fa-lock"></i> Clinical Authorized Access Only</span>
+                <div class="auth-security-tag"><i class="fa-solid fa-lock"></i> Authorized Medical Access Only</div>
             </div>
 
             <form id="doctor-login-form" class="login-form">
                 <div class="login-form-group">
-                    <label for="login-email"><i class="fa-solid fa-envelope"></i> Clinician ID / Email</label>
-                    <input type="text" id="login-email" placeholder="e.g. doctor@clinical.org or Dr. Smith" value="doctor@clinical.org" required>
+                    <label for="login-email"><i class="fa-solid fa-id-badge"></i> Clinician ID / Email</label>
+                    <input type="text" id="login-email" placeholder="doctor@clinical.org or Dr. Smith" value="doctor@clinical.org" required autocomplete="username">
                 </div>
 
                 <div class="login-form-group">
                     <label for="login-password"><i class="fa-solid fa-key"></i> Security Password</label>
-                    <input type="password" id="login-password" placeholder="Enter clinical password" value="admin" required>
+                    <input type="password" id="login-password" placeholder="Enter clinical password" value="admin" required autocomplete="current-password">
                 </div>
 
                 <div id="login-error-msg" class="login-error hidden">
@@ -49,15 +49,16 @@
                 <div class="demo-login-box">
                     <span>Quick Demo Clinician Access:</span>
                     <button type="button" id="quick-demo-btn" class="demo-btn">
-                        <i class="fa-solid fa-stethoscope"></i> Auto-fill Demo Doctor (Dr. Sarah Mitchell)
+                        <i class="fa-solid fa-stethoscope"></i> Quick Sign-In (Dr. Sarah Mitchell, MD)
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Main Dashboard Container -->
     <div class="app-container" id="main-app-container">
-        <!-- Sidebar Navigation & Quick Actions -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="brand">
                 <i class="fa-solid fa-shield-halved brand-icon"></i>
@@ -84,7 +85,7 @@
                     <i class="fa-solid fa-microchip"></i>
                     <span>Trained Classifier</span>
                 </div>
-                <div class="model-name" id="model-name-label">Loading Classifier...</div>
+                <div class="model-name" id="model-name-label">RandomForest Classifier</div>
                 <div class="model-accuracy" id="model-accuracy-label">Accuracy: --%</div>
             </div>
 
@@ -117,13 +118,14 @@
             </div>
         </aside>
 
-        <!-- Main Dashboard Workspace -->
+        <!-- Main Workspace View -->
         <main class="workspace" id="workspace-view">
-            <!-- Screen 1: Dedicated Patient Registration & Directory Page -->
+            
+            <!-- Page 1: Patient Registration & Management -->
             <section class="dashboard-section hidden" id="section-patients">
                 <header class="section-header">
                     <div class="welcome-text">
-                        <h2>Patient Registry & Profile Management</h2>
+                        <h2>Patient Registry & Management</h2>
                         <p>Register new patients, record clinical symptoms, and initiate diagnostic liver screening.</p>
                     </div>
                 </header>
@@ -187,8 +189,8 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="reg-patient-symptoms"><i class="fa-solid fa-notes-medical"></i> Clinical Indication / Symptoms</label>
-                                <textarea id="reg-patient-symptoms" rows="3" placeholder="e.g. Jaundice, Right Upper Quadrant abdominal discomfort, chronic fatigue, elevated ALT in routine screening..."></textarea>
+                                <label for="reg-patient-symptoms"><i class="fa-solid fa-notes-medical"></i> Clinical Indications / Symptoms</label>
+                                <textarea id="reg-patient-symptoms" rows="3" placeholder="e.g. Jaundice, Right Upper Quadrant discomfort, chronic fatigue, elevated ALT in routine screening..."></textarea>
                             </div>
 
                             <button type="submit" class="submit-btn">
@@ -213,13 +215,219 @@
                         </div>
 
                         <div class="patient-cards-list" id="patient-cards-container">
-                            <!-- Populated dynamically -->
+                            <!-- Dynamically generated patient cards -->
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Screen 3: Screening History -->
+            <!-- Page 2: LFT Screening Dashboard -->
+            <section class="dashboard-section" id="section-dashboard">
+                <header class="section-header">
+                    <div class="welcome-text">
+                        <h2>Liver Disease Patient Screening</h2>
+                        <p>Input patient biochemistry metrics from standard Liver Function Tests (LFT) for real-time risk assessment.</p>
+                    </div>
+                </header>
+
+                <!-- Active Patient Banner in Dashboard -->
+                <div class="active-patient-banner">
+                    <div class="banner-icon"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="banner-info">
+                        <span class="banner-label">Currently Evaluating Patient:</span>
+                        <h4 id="active-patient-heading">Robert Jenkins (MRN: PT-2026-104) — 45 Yrs, Male</h4>
+                    </div>
+                    <div class="banner-actions">
+                        <button type="button" class="banner-change-btn" id="btn-switch-patient">
+                            <i class="fa-solid fa-users"></i> Switch / Pick Patient
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-layout">
+                    <!-- Left: Clinical Input Form -->
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-stethoscope"></i>
+                            <h3>Patient Biochemistry Profile</h3>
+                        </div>
+                        <form id="screening-form">
+                            <!-- Demographics -->
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <label for="input-patient-name"><i class="fa-solid fa-user"></i> Patient Name</label>
+                                    <input type="text" id="input-patient-name" name="patient_name" value="Robert Jenkins" required>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="input-patient-id"><i class="fa-solid fa-hashtag"></i> Patient MRN</label>
+                                    <input type="text" id="input-patient-id" name="patient_id" value="PT-2026-104" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <label for="input-age">Age (Years)</label>
+                                    <input type="number" id="input-age" name="Age" min="1" max="120" value="45" required>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="input-gender">Gender</label>
+                                    <select id="input-gender" name="Gender" required>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Bilirubin & ALP -->
+                            <div class="form-row-header">Bilirubin & Enzymes</div>
+                            
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-total-bilirubin">Total Bilirubin</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-total-bilirubin" name="Total_Bilirubin" class="param-input" min="0.1" max="100.0" step="0.1" value="1.2" required>
+                                        <span class="input-unit">mg/dL</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-total-bilirubin" class="param-range" min="0.1" max="30.0" step="0.1" value="1.2">
+                                <span class="input-limits">Normal: 0.1 – 1.2 mg/dL</span>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-alkaline-phosphatase">Alkaline Phosphatase (ALP)</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-alkaline-phosphatase" name="Alkaline_Phosphotase" class="param-input" min="10" max="3000" step="1" value="150" required>
+                                        <span class="input-unit">U/L</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-alkaline-phosphatase" class="param-range" min="30" max="1500" step="5" value="150">
+                                <span class="input-limits">Normal: 44 – 147 U/L</span>
+                            </div>
+
+                            <!-- Transaminases -->
+                            <div class="form-row-header">Transaminases (Hepatocellular injury)</div>
+                            
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-alt">Alamine Aminotransferase (ALT/SGPT)</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-alt" name="Alamine_Aminotransferase" class="param-input" min="1" max="2500" step="1" value="35" required>
+                                        <span class="input-unit">U/L</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-alt" class="param-range" min="5" max="1000" step="5" value="35">
+                                <span class="input-limits">Normal: 7 – 56 U/L</span>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-ast">Aspartate Aminotransferase (AST/SGOT)</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-ast" name="Aspartate_Aminotransferase" class="param-input" min="1" max="5000" step="1" value="40" required>
+                                        <span class="input-unit">U/L</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-ast" class="param-range" min="5" max="1000" step="5" value="40">
+                                <span class="input-limits">Normal: 10 – 40 U/L</span>
+                            </div>
+
+                            <!-- Proteins -->
+                            <div class="form-row-header">Synthetic Liver Function (Proteins)</div>
+
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-total-proteins">Total Proteins</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-total-proteins" name="Total_Protiens" class="param-input" min="1.0" max="10.0" step="0.1" value="6.8" required>
+                                        <span class="input-unit">g/dL</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-total-proteins" class="param-range" min="2.0" max="10.0" step="0.1" value="6.8">
+                                <span class="input-limits">Normal: 6.0 – 8.3 g/dL</span>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-albumin">Albumin</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-albumin" name="Albumin" class="param-input" min="0.5" max="6.0" step="0.1" value="3.5" required>
+                                        <span class="input-unit">g/dL</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-albumin" class="param-range" min="1.0" max="6.0" step="0.1" value="3.5">
+                                <span class="input-limits">Normal: 3.5 – 5.0 g/dL</span>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="slider-header">
+                                    <label for="input-ag-ratio">Albumin/Globulin Ratio (A/G Ratio)</label>
+                                    <div class="value-input-group">
+                                        <input type="number" id="input-ag-ratio" name="Albumin_and_Globulin_Ratio" class="param-input" min="0.1" max="5.0" step="0.01" value="1.0" required>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-ag-ratio" class="param-range" min="0.1" max="3.0" step="0.05" value="1.0">
+                                <span class="input-limits">Normal: 1.0 – 2.0</span>
+                            </div>
+
+                            <button type="submit" class="submit-btn">
+                                <i class="fa-solid fa-heart-pulse"></i> Evaluate Liver Risk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right: Prediction Results & Explanation -->
+                    <div class="results-wrapper">
+                        <!-- Risk Gauge Card -->
+                        <div class="card result-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <h3>Screening Assessment</h3>
+                            </div>
+                            <div class="result-body">
+                                <div class="gauge-container">
+                                    <svg viewBox="0 0 200 200" class="gauge">
+                                        <!-- Background Circle -->
+                                        <circle cx="100" cy="100" r="85" class="gauge-bg" />
+                                        <!-- Foreground Progress Circle -->
+                                        <circle cx="100" cy="100" r="85" class="gauge-fill" id="gauge-fill" />
+                                    </svg>
+                                    <div class="gauge-text">
+                                        <span class="gauge-percent" id="risk-percent">--%</span>
+                                        <span class="gauge-label">LIVER RISK</span>
+                                    </div>
+                                </div>
+
+                                <div class="assessment-status">
+                                    <div class="status-indicator status-unknown" id="status-indicator">
+                                        <i class="fa-solid fa-circle-question" id="status-icon"></i>
+                                        <span id="status-text">Pending Evaluation</span>
+                                    </div>
+                                    <p class="assessment-description" id="status-desc">
+                                        Provide biochemistry parameters and submit the evaluation form to generate risk probability.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explainable AI (XAI) Card -->
+                        <div class="card explain-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                                <h3>Risk Factor Contributions</h3>
+                            </div>
+                            <div class="explain-body" id="explain-container">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                    <p>Submit a profile to visualize feature contribution analysis (how each biochemical marker pulls the risk score up or down relative to typical population averages).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page 3: Screening History -->
             <section class="dashboard-section hidden" id="section-history">
                 <header class="section-header">
                     <h2>Screening History</h2>
@@ -252,7 +460,7 @@
                 </div>
             </section>
 
-            <!-- Screen 3: Clinical Guide -->
+            <!-- Page 4: Clinical Guide -->
             <section class="dashboard-section hidden" id="section-about">
                 <header class="section-header">
                     <h2>Clinical Reference & Guide</h2>
@@ -266,7 +474,7 @@
                             <p>An indicator of biliary clearance. High levels signal liver congestion, biliary obstruction, or chronic hepatitis.</p>
                         </div>
                         <div class="guide-item">
-                            <h4>Alkaline Phosphotase (ALP)</h4>
+                            <h4>Alkaline Phosphatase (ALP)</h4>
                             <p>Concentrated in biliary tract membranes. Elevated ALP indicates cholestasis, primary biliary cirrhosis, or duct blockages.</p>
                         </div>
                         <div class="guide-item">
@@ -275,13 +483,13 @@
                         </div>
                         <div class="guide-item">
                             <h4>Albumin & A/G Ratio</h4>
-                            <p>Reflects synthetic liver capacity. Since albumin is manufactured in hepatocytes, low values and a depressed Albumin/Globulin ratio (<1.0) suggest severe, chronic impairment or cirrhosis.</p>
+                            <p>Reflects synthetic liver capacity. Since albumin is manufactured in hepatocytes, low values and a depressed Albumin/Globulin ratio (&lt;1.0) suggest severe, chronic impairment or cirrhosis.</p>
                         </div>
                     </div>
 
                     <div class="card guide-card">
                         <h3>Model Architecture & Metrics</h3>
-                        <p>HepaticShield uses a high-performance **Random Forest Classifier** optimized through synthetic minority over-sampling (**SMOTE**) to balance the clinical data.</p>
+                        <p>HepaticShield uses a high-performance <strong>Random Forest Classifier</strong> optimized through synthetic minority over-sampling (<strong>SMOTE</strong>) to balance clinical training cohorts.</p>
                         <div class="metric-grid">
                             <div class="metric-box">
                                 <div class="metric-val" id="about-acc">69.7%</div>

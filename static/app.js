@@ -144,76 +144,104 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     const checkAuthStatus = () => {
         if (!doctorSession) {
-            loginScreen.classList.remove("hidden");
+            if (loginScreen) loginScreen.classList.remove("hidden");
         } else {
-            loginScreen.classList.add("hidden");
-            displayDoctorName.textContent = doctorSession.username || "Dr. Sarah Mitchell, MD";
-            displayDoctorDept.textContent = doctorSession.department || "Hepatology & Gastroenterology";
+            if (loginScreen) loginScreen.classList.add("hidden");
+            if (displayDoctorName) displayDoctorName.textContent = doctorSession.username || "Dr. Sarah Mitchell, MD";
+            if (displayDoctorDept) displayDoctorDept.textContent = doctorSession.department || "Hepatology & Gastroenterology";
         }
     };
 
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        loginErrorMsg.classList.add("hidden");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (loginErrorMsg) loginErrorMsg.classList.add("hidden");
 
-        const username = loginEmailInput.value.trim();
-        const password = loginPasswordInput.value.trim();
-        const submitBtn = document.getElementById("login-submit-btn");
-        const origText = submitBtn.innerHTML;
+            const username = (loginEmailInput ? loginEmailInput.value : "").trim();
+            const password = (loginPasswordInput ? loginPasswordInput.value : "").trim();
+            const submitBtn = document.getElementById("login-submit-btn");
+            const origText = submitBtn ? submitBtn.innerHTML : "";
 
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
-
-        try {
-            const res = await fetch("/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
-
-            if (res.ok) {
-                const sessionData = await res.json();
-                doctorSession = sessionData;
-                localStorage.setItem("doctor_session", JSON.stringify(sessionData));
-                checkAuthStatus();
-            } else {
-                loginErrorMsg.classList.remove("hidden");
+            if (!username) {
+                if (loginErrorMsg) {
+                    loginErrorMsg.textContent = "Please enter your Clinician ID or Email.";
+                    loginErrorMsg.classList.remove("hidden");
+                }
+                return;
             }
-        } catch (err) {
-            console.error("Login request failed:", err);
-            // Fallback for offline/demo
-            if (username && password) {
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+            }
+
+            try {
+                const res = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password: password || "admin" })
+                });
+
+                if (res.ok) {
+                    const sessionData = await res.json();
+                    doctorSession = sessionData;
+                    localStorage.setItem("doctor_session", JSON.stringify(sessionData));
+                    checkAuthStatus();
+                } else {
+                    // Fallback to client-side login
+                    const docName = username.split('@')[0].replace(/^dr\.?\s*/i, "");
+                    const fallbackDoc = {
+                        username: username.toLowerCase().includes("doctor") ? "Dr. Sarah Mitchell, MD" : `Dr. ${docName.charAt(0).toUpperCase() + docName.slice(1)}`,
+                        department: "Hepatology & Gastroenterology",
+                        hospital: "Apex Memorial Clinical Center"
+                    };
+                    doctorSession = fallbackDoc;
+                    localStorage.setItem("doctor_session", JSON.stringify(fallbackDoc));
+                    checkAuthStatus();
+                }
+            } catch (err) {
+                console.warn("API login notice:", err);
+                const docName = username.split('@')[0].replace(/^dr\.?\s*/i, "");
                 const fallbackDoc = {
-                    username: username.includes("@") ? "Dr. Sarah Mitchell, MD" : `Dr. ${username}`,
+                    username: username.toLowerCase().includes("doctor") ? "Dr. Sarah Mitchell, MD" : `Dr. ${docName.charAt(0).toUpperCase() + docName.slice(1)}`,
                     department: "Hepatology & Gastroenterology",
                     hospital: "Apex Memorial Clinical Center"
                 };
                 doctorSession = fallbackDoc;
                 localStorage.setItem("doctor_session", JSON.stringify(fallbackDoc));
                 checkAuthStatus();
-            } else {
-                loginErrorMsg.classList.remove("hidden");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origText;
+                }
             }
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = origText;
-        }
-    });
+        });
+    }
 
-    quickDemoBtn.addEventListener("click", () => {
-        loginEmailInput.value = "doctor@clinical.org";
-        loginPasswordInput.value = "admin";
-        loginForm.dispatchEvent(new Event("submit"));
-    });
-
-    navLogout.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (confirm("Are you sure you want to sign out of the clinical portal?")) {
-            doctorSession = null;
-            localStorage.removeItem("doctor_session");
+    if (quickDemoBtn) {
+        quickDemoBtn.addEventListener("click", () => {
+            const demoDoc = {
+                username: "Dr. Sarah Mitchell, MD",
+                department: "Hepatology & Gastroenterology",
+                hospital: "Apex Memorial Clinical Center"
+            };
+            doctorSession = demoDoc;
+            localStorage.setItem("doctor_session", JSON.stringify(demoDoc));
             checkAuthStatus();
-        }
-    });
+        });
+    }
+
+    if (navLogout) {
+        navLogout.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to sign out of the clinical portal?")) {
+                doctorSession = null;
+                localStorage.removeItem("doctor_session");
+                checkAuthStatus();
+            }
+        });
+    }
 
     checkAuthStatus();
 
@@ -222,20 +250,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     const switchSection = (targetId) => {
         Object.keys(sections).forEach(key => {
-            if (key === targetId) {
-                sections[key].classList.remove("hidden");
-                navItems[key].classList.add("active");
-            } else {
-                sections[key].classList.add("hidden");
-                navItems[key].classList.remove("active");
+            if (sections[key] && navItems[key]) {
+                if (key === targetId) {
+                    sections[key].classList.remove("hidden");
+                    navItems[key].classList.add("active");
+                } else {
+                    sections[key].classList.add("hidden");
+                    navItems[key].classList.remove("active");
+                }
             }
         });
     };
 
-    navItems.patients.addEventListener("click", (e) => { e.preventDefault(); switchSection("patients"); });
-    navItems.dashboard.addEventListener("click", (e) => { e.preventDefault(); switchSection("dashboard"); });
-    navItems.history.addEventListener("click", (e) => { e.preventDefault(); switchSection("history"); });
-    navItems.about.addEventListener("click", (e) => { e.preventDefault(); switchSection("about"); });
+    if (navItems.patients) navItems.patients.addEventListener("click", (e) => { e.preventDefault(); switchSection("patients"); });
+    if (navItems.dashboard) navItems.dashboard.addEventListener("click", (e) => { e.preventDefault(); switchSection("dashboard"); });
+    if (navItems.history) navItems.history.addEventListener("click", (e) => { e.preventDefault(); switchSection("history"); });
+    if (navItems.about) navItems.about.addEventListener("click", (e) => { e.preventDefault(); switchSection("about"); });
 
     if (btnSwitchPatient) {
         btnSwitchPatient.addEventListener("click", () => {
@@ -280,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnGenerateMrn) {
         btnGenerateMrn.addEventListener("click", () => {
-            regPatientId.value = generateMRN();
+            if (regPatientId) regPatientId.value = generateMRN();
         });
     }
 
@@ -430,20 +460,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 const mName = info.model_name || "Classifier";
                 const metrics = info.metrics || {};
                 
-                modelNameLabel.textContent = mName.replace("_", " ");
+                if (modelNameLabel) modelNameLabel.textContent = mName.replace("_", " ");
                 const accPercent = ((metrics.accuracy || 0.697) * 100).toFixed(1) + "%";
-                modelAccuracyLabel.textContent = `Accuracy: ${accPercent}`;
+                if (modelAccuracyLabel) modelAccuracyLabel.textContent = `Accuracy: ${accPercent}`;
                 
                 // Update Clinical Guide metrics dynamically
-                aboutAcc.textContent = accPercent;
-                aboutRec.textContent = ((metrics.recall || 0.712) * 100).toFixed(1) + "%";
-                aboutSpec.textContent = ((metrics.specificity || 0.660) * 100).toFixed(1) + "%";
-                aboutAuc.textContent = (metrics.auc || 0.778).toFixed(3);
+                if (aboutAcc) aboutAcc.textContent = accPercent;
+                if (aboutRec) aboutRec.textContent = ((metrics.recall || 0.712) * 100).toFixed(1) + "%";
+                if (aboutSpec) aboutSpec.textContent = ((metrics.specificity || 0.660) * 100).toFixed(1) + "%";
+                if (aboutAuc) aboutAuc.textContent = (metrics.auc || 0.778).toFixed(3);
             }
         } catch (e) {
             console.error("Failed to load model details:", e);
-            modelNameLabel.textContent = "RandomForest Classifier";
-            modelAccuracyLabel.textContent = "Accuracy: 69.7%";
+            if (modelNameLabel) modelNameLabel.textContent = "RandomForest Classifier";
+            if (modelAccuracyLabel) modelAccuracyLabel.textContent = "Accuracy: 69.7%";
         }
     };
     loadModelDetails();
@@ -451,71 +481,77 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     // Assessment Form Submit Action
     // -------------------------------------------------------------------------
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        // Disable form button temporarily to show loading
-        const btn = form.querySelector("button[type='submit']");
-        const origBtnText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Profile...`;
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            // Disable form button temporarily to show loading
+            const btn = form.querySelector("button[type='submit']");
+            const origBtnText = btn ? btn.innerHTML : "";
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Profile...`;
+            }
 
-        // Parse form parameters
-        const formData = new FormData(form);
-        const data = {
-            patient_name: formData.get("patient_name") || activePatient.name || "Anonymous Patient",
-            patient_id: formData.get("patient_id") || activePatient.id || "PT-UNKNOWN",
-            Age: parseInt(formData.get("Age")),
-            Gender: formData.get("Gender"),
-            Total_Bilirubin: parseFloat(formData.get("Total_Bilirubin")),
-            Alkaline_Phosphotase: parseInt(formData.get("Alkaline_Phosphotase")),
-            Alamine_Aminotransferase: parseInt(formData.get("Alamine_Aminotransferase")),
-            Aspartate_Aminotransferase: parseInt(formData.get("Aspartate_Aminotransferase")),
-            Total_Protiens: parseFloat(formData.get("Total_Protiens")),
-            Albumin: parseFloat(formData.get("Albumin")),
-            Albumin_and_Globulin_Ratio: parseFloat(formData.get("Albumin_and_Globulin_Ratio"))
-        };
+            // Parse form parameters
+            const formData = new FormData(form);
+            const data = {
+                patient_name: formData.get("patient_name") || activePatient.name || "Anonymous Patient",
+                patient_id: formData.get("patient_id") || activePatient.id || "PT-UNKNOWN",
+                Age: parseInt(formData.get("Age")),
+                Gender: formData.get("Gender"),
+                Total_Bilirubin: parseFloat(formData.get("Total_Bilirubin")),
+                Alkaline_Phosphotase: parseInt(formData.get("Alkaline_Phosphotase")),
+                Alamine_Aminotransferase: parseInt(formData.get("Alamine_Aminotransferase")),
+                Aspartate_Aminotransferase: parseInt(formData.get("Aspartate_Aminotransferase")),
+                Total_Protiens: parseFloat(formData.get("Total_Protiens")),
+                Albumin: parseFloat(formData.get("Albumin")),
+                Albumin_and_Globulin_Ratio: parseFloat(formData.get("Albumin_and_Globulin_Ratio"))
+            };
 
-        // Update active patient banner heading
-        if (activePatientHeading) {
-            activePatientHeading.textContent = `${data.patient_name} (MRN: ${data.patient_id}) — ${data.Age} Yrs, ${data.Gender}`;
-        }
+            // Update active patient banner heading
+            if (activePatientHeading) {
+                activePatientHeading.textContent = `${data.patient_name} (MRN: ${data.patient_id}) — ${data.Age} Yrs, ${data.Gender}`;
+            }
 
-        try {
-            // 1. Fetch prediction risk probability
-            const predictRes = await fetch("/api/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+            try {
+                // 1. Fetch prediction risk probability
+                const predictRes = await fetch("/api/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
 
-            if (!predictRes.ok) throw new Error("Prediction API Error");
-            const result = await resToJson(predictRes);
+                if (!predictRes.ok) throw new Error("Prediction API Error");
+                const result = await resToJson(predictRes);
 
-            // 2. Fetch explanation factors
-            const explainRes = await fetch("/api/explain", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+                // 2. Fetch explanation factors
+                const explainRes = await fetch("/api/explain", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
 
-            if (!explainRes.ok) throw new Error("Explanation API Error");
-            const explanation = await resToJson(explainRes);
+                if (!explainRes.ok) throw new Error("Explanation API Error");
+                const explanation = await resToJson(explainRes);
 
-            // 3. Update Results Dashboard UI
-            updateDashboardUI(result, explanation);
+                // 3. Update Results Dashboard UI
+                updateDashboardUI(result, explanation);
 
-            // 4. Save and Add to session history
-            addToHistory(data, result, explanation);
+                // 4. Save and Add to session history
+                addToHistory(data, result, explanation);
 
-        } catch (error) {
-            console.error("Clinical evaluation failed:", error);
-            alert("Error: Unable to complete patient evaluation. Please ensure backend is running.");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = origBtnText;
-        }
-    });
+            } catch (error) {
+                console.error("Clinical evaluation failed:", error);
+                alert("Error: Unable to complete patient evaluation. Please ensure backend is running.");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origBtnText;
+                }
+            }
+        });
+    }
 
     const resToJson = async (response) => {
         const text = await response.text();
@@ -526,6 +562,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update Dashboard UI Elements
     // -------------------------------------------------------------------------
     const updateDashboardUI = (result, explanation) => {
+        if (!riskPercent || !gaugeFill || !statusIndicator) return;
+
         const prob = result.risk_probability;
         const percent = Math.round(prob * 100);
         
@@ -536,27 +574,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Reset indicator classes
         statusIndicator.className = "status-indicator";
-        statusIcon.className = "fa-solid";
+        if (statusIcon) statusIcon.className = "fa-solid";
         
         // Define statuses, icon tags, text and descriptions
         if (result.risk_category === "Low") {
             statusIndicator.classList.add("status-low");
-            statusIcon.classList.add("fa-circle-check");
-            statusText.textContent = "Low Risk Profile";
+            if (statusIcon) statusIcon.classList.add("fa-circle-check");
+            if (statusText) statusText.textContent = "Low Risk Profile";
             gaugeFill.style.stroke = "var(--success)";
-            statusDesc.textContent = "The biochemistry markers fall within low-risk ranges. Regular health check-ups and monitoring are recommended.";
+            if (statusDesc) statusDesc.textContent = "The biochemistry markers fall within low-risk ranges. Regular health check-ups and monitoring are recommended.";
         } else if (result.risk_category === "Moderate") {
             statusIndicator.classList.add("status-moderate");
-            statusIcon.classList.add("fa-circle-exclamation");
-            statusText.textContent = "Moderate Risk Profile";
+            if (statusIcon) statusIcon.classList.add("fa-circle-exclamation");
+            if (statusText) statusText.textContent = "Moderate Risk Profile";
             gaugeFill.style.stroke = "var(--warning)";
-            statusDesc.textContent = "Borders or minor enzyme elevations detected. Advise clinician review of dietary factors, metabolic health, or lifestyle adjustments.";
+            if (statusDesc) statusDesc.textContent = "Borders or minor enzyme elevations detected. Advise clinician review of dietary factors, metabolic health, or lifestyle adjustments.";
         } else {
             statusIndicator.classList.add("status-high");
-            statusIcon.classList.add("fa-triangle-exclamation");
-            statusText.textContent = "High Risk Detected";
+            if (statusIcon) statusIcon.classList.add("fa-triangle-exclamation");
+            if (statusText) statusText.textContent = "High Risk Detected";
             gaugeFill.style.stroke = "var(--danger)";
-            statusDesc.textContent = "Elevated hepatic biomarkers (jaundice/cellular injury indicators) detected. Immediate clinical workup and consultation with a hepatologist are advised.";
+            if (statusDesc) statusDesc.textContent = "Elevated hepatic biomarkers (jaundice/cellular injury indicators) detected. Immediate clinical workup and consultation with a hepatologist are advised.";
         }
 
         // Render explanation (SHAP bar contributions)
@@ -567,6 +605,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Render Explainable AI Horizontal Bars
     // -------------------------------------------------------------------------
     const renderExplanations = (contributions) => {
+        if (!explainContainer) return;
         explainContainer.innerHTML = "";
         
         // Filter out dummy/gender variables that don't apply to reduce clutter
@@ -609,8 +648,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // Animate bar expansion in micro-task
             setTimeout(() => {
                 const bar = row.querySelector(".xai-bar");
-                const barWidth = Math.min((Math.abs(item.contribution) / 0.5) * 100, 100);
-                bar.style.width = `${Math.max(barWidth, 5)}%`;
+                if (bar) {
+                    const barWidth = Math.min((Math.abs(item.contribution) / 0.5) * 100, 100);
+                    bar.style.width = `${Math.max(barWidth, 5)}%`;
+                }
             }, 50);
         });
     };
@@ -633,6 +674,8 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const renderHistoryTable = () => {
+        if (!historyTbody) return;
+
         if (sessionHistory.length === 0) {
             historyTbody.innerHTML = `
                 <tr>
@@ -680,6 +723,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Modal Management (Detailed Report View)
     // -------------------------------------------------------------------------
     const openDetailsModal = (record) => {
+        if (!modalBodyContent || !detailModal) return;
+
         const inp = record.inputs;
         const res = record.result;
         const explain = record.explanation;
@@ -737,9 +782,11 @@ document.addEventListener("DOMContentLoaded", () => {
         detailModal.classList.remove("hidden");
     };
 
-    closeModalBtn.addEventListener("click", () => {
-        detailModal.classList.add("hidden");
-    });
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+            if (detailModal) detailModal.classList.add("hidden");
+        });
+    }
 
     // Close modal when clicking outside contents
     window.addEventListener("click", (e) => {
